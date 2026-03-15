@@ -10,7 +10,9 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/*
 
 # Install ttyd for web-based terminal access
-RUN wget -qO /usr/local/bin/ttyd https://github.com/tsl0922/ttyd/releases/latest/download/ttyd.$(dpkg --print-architecture) && \
+# ttyd releases use arch names like x86_64/aarch64, not dpkg's amd64/arm64
+RUN ARCH=$(uname -m) && \
+    wget -qO /usr/local/bin/ttyd https://github.com/tsl0922/ttyd/releases/latest/download/ttyd.${ARCH} && \
     chmod +x /usr/local/bin/ttyd
 
 WORKDIR /app
