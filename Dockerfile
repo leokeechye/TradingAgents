@@ -6,14 +6,7 @@ RUN apt-get update && \
         gcc \
         g++ \
         git \
-        wget \
     && rm -rf /var/lib/apt/lists/*
-
-# Install ttyd for web-based terminal access
-# ttyd releases use arch names like x86_64/aarch64, not dpkg's amd64/arm64
-RUN ARCH=$(uname -m) && \
-    wget -qO /usr/local/bin/ttyd https://github.com/tsl0922/ttyd/releases/latest/download/ttyd.${ARCH} && \
-    chmod +x /usr/local/bin/ttyd
 
 WORKDIR /app
 
@@ -32,13 +25,9 @@ RUN pip install --no-cache-dir -e .
 # Railway provides PORT env var; default to 8080
 ENV PORT=8080
 
-# Run ttyd serving the CLI
-# --writable allows user input
-# -t fontSize=16 sets readable font size
-# -t theme='{"background":"#1a1b26"}' dark theme
-CMD ttyd \
-    --port ${PORT} \
-    --writable \
-    -t fontSize=16 \
-    -t 'theme={"background":"#1a1b26","foreground":"#c0caf5"}' \
-    python -m cli.main
+# Run Streamlit
+CMD streamlit run app.py \
+    --server.port=${PORT} \
+    --server.address=0.0.0.0 \
+    --server.headless=true \
+    --browser.gatherUsageStats=false
